@@ -1,0 +1,7 @@
+http://hunch.futile.studio {
+	encode zstd gzip
+	# Socket.IO carries every room; buffered, answers land late on other phones.
+	reverse_proxy 127.0.0.1:4351 {
+		flush_interval -1
+	}
+}

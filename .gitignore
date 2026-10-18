@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.DS_Store
+
+# Claude Code and local tooling
+.claude/
+.codegraph/
+.mcp.json
+.impeccable/review/
+.impeccable/mocks/

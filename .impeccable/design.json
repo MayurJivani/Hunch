@@ -1,0 +1,846 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-17T01:16:58+00:00",
+  "title": "Design System: Hunch",
+  "extensions": {
+    "colorMeta": {
+      "cyan": {
+        "role": "primary",
+        "displayName": "Lagoon Cyan",
+        "canonical": "#5ce1e6",
+        "tonalRamp": [
+          "oklch(15% 0.068 199)",
+          "oklch(27% 0.091 199)",
+          "oklch(39% 0.115 199)",
+          "oklch(51% 0.115 199)",
+          "oklch(63% 0.115 199)",
+          "oklch(75% 0.107 199)",
+          "oklch(85% 0.088 199)",
+          "oklch(95% 0.068 199)"
+        ]
+      },
+      "gold": {
+        "role": "secondary",
+        "displayName": "Habitat Gold",
+        "canonical": "#ffc857",
+        "tonalRamp": [
+          "oklch(15% 0.077 83)",
+          "oklch(27% 0.106 83)",
+          "oklch(39% 0.134 83)",
+          "oklch(51% 0.142 83)",
+          "oklch(63% 0.142 83)",
+          "oklch(75% 0.125 83)",
+          "oklch(85% 0.101 83)",
+          "oklch(95% 0.077 83)"
+        ]
+      },
+      "coral": {
+        "role": "tertiary",
+        "displayName": "Ember Coral",
+        "canonical": "#ff7a59",
+        "tonalRamp": [
+          "oklch(15% 0.087 35)",
+          "oklch(27% 0.120 35)",
+          "oklch(39% 0.154 35)",
+          "oklch(51% 0.170 35)",
+          "oklch(63% 0.170 35)",
+          "oklch(75% 0.143 35)",
+          "oklch(85% 0.115 35)",
+          "oklch(95% 0.087 35)"
+        ]
+      },
+      "ink-0": {
+        "role": "neutral",
+        "displayName": "Abyss Navy",
+        "canonical": "#050d18",
+        "tonalRamp": [
+          "oklch(15% 0.027 254)",
+          "oklch(27% 0.027 254)",
+          "oklch(39% 0.027 254)",
+          "oklch(51% 0.027 254)",
+          "oklch(63% 0.027 254)",
+          "oklch(75% 0.027 254)",
+          "oklch(85% 0.027 254)",
+          "oklch(95% 0.027 254)"
+        ]
+      },
+      "ink-1": {
+        "role": "neutral",
+        "displayName": "Deep Harbour",
+        "canonical": "#0a1a2a",
+        "tonalRamp": [
+          "oklch(15% 0.039 250)",
+          "oklch(27% 0.039 250)",
+          "oklch(39% 0.039 250)",
+          "oklch(51% 0.039 250)",
+          "oklch(63% 0.039 250)",
+          "oklch(75% 0.039 250)",
+          "oklch(85% 0.039 250)",
+          "oklch(95% 0.039 250)"
+        ]
+      },
+      "night-teal": {
+        "role": "neutral",
+        "displayName": "Night Teal",
+        "canonical": "#0c2a3a",
+        "tonalRamp": [
+          "oklch(15% 0.045 235)",
+          "oklch(27% 0.046 235)",
+          "oklch(39% 0.046 235)",
+          "oklch(51% 0.046 235)",
+          "oklch(63% 0.046 235)",
+          "oklch(75% 0.046 235)",
+          "oklch(85% 0.046 235)",
+          "oklch(95% 0.045 235)"
+        ]
+      },
+      "glass": {
+        "role": "neutral",
+        "displayName": "Smoked Glass",
+        "canonical": "rgba(8, 20, 32, 0.62)"
+      },
+      "glass-strong": {
+        "role": "neutral",
+        "displayName": "Deep Glass",
+        "canonical": "rgba(7, 17, 28, 0.92)"
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "rgba(232, 244, 240, 0.1)"
+      },
+      "line-2": {
+        "role": "neutral",
+        "displayName": "Hairline Strong",
+        "canonical": "rgba(232, 244, 240, 0.18)"
+      },
+      "ivory": {
+        "role": "neutral",
+        "displayName": "Bone Ivory",
+        "canonical": "#f4f1e8",
+        "tonalRamp": [
+          "oklch(15% 0.012 92)",
+          "oklch(27% 0.012 92)",
+          "oklch(39% 0.012 92)",
+          "oklch(51% 0.012 92)",
+          "oklch(63% 0.012 92)",
+          "oklch(75% 0.012 92)",
+          "oklch(85% 0.012 92)",
+          "oklch(95% 0.012 92)"
+        ]
+      },
+      "ivory-2": {
+        "role": "neutral",
+        "displayName": "Bone Ivory 72%",
+        "canonical": "rgba(244, 241, 232, 0.72)"
+      },
+      "ivory-3": {
+        "role": "neutral",
+        "displayName": "Bone Ivory 50%",
+        "canonical": "rgba(244, 241, 232, 0.5)"
+      },
+      "search-ink": {
+        "role": "neutral",
+        "displayName": "Scorched Umber",
+        "canonical": "#2a1a00",
+        "tonalRamp": [
+          "oklch(15% 0.046 78)",
+          "oklch(27% 0.049 78)",
+          "oklch(39% 0.049 78)",
+          "oklch(51% 0.049 78)",
+          "oklch(63% 0.049 78)",
+          "oklch(75% 0.049 78)",
+          "oklch(85% 0.049 78)",
+          "oklch(95% 0.046 78)"
+        ]
+      },
+      "glyph-ivory": {
+        "role": "neutral",
+        "displayName": "Glyph Ivory",
+        "canonical": "#fff8ea",
+        "tonalRamp": [
+          "oklch(15% 0.020 85)",
+          "oklch(27% 0.020 85)",
+          "oklch(39% 0.020 85)",
+          "oklch(51% 0.020 85)",
+          "oklch(63% 0.020 85)",
+          "oklch(75% 0.020 85)",
+          "oklch(85% 0.020 85)",
+          "oklch(95% 0.020 85)"
+        ]
+      },
+      "player-red": {
+        "role": "world",
+        "displayName": "Player Red",
+        "canonical": "#e5484d",
+        "tonalRamp": [
+          "oklch(15% 0.094 23)",
+          "oklch(27% 0.133 23)",
+          "oklch(39% 0.172 23)",
+          "oklch(51% 0.193 23)",
+          "oklch(63% 0.193 23)",
+          "oklch(75% 0.159 23)",
+          "oklch(85% 0.127 23)",
+          "oklch(95% 0.094 23)"
+        ]
+      },
+      "player-blue": {
+        "role": "world",
+        "displayName": "Player Blue",
+        "canonical": "#3e63dd",
+        "tonalRamp": [
+          "oklch(15% 0.094 267)",
+          "oklch(27% 0.132 267)",
+          "oklch(39% 0.170 267)",
+          "oklch(51% 0.191 267)",
+          "oklch(63% 0.191 267)",
+          "oklch(75% 0.157 267)",
+          "oklch(85% 0.126 267)",
+          "oklch(95% 0.094 267)"
+        ]
+      },
+      "player-amber": {
+        "role": "world",
+        "displayName": "Player Amber",
+        "canonical": "#f5a524",
+        "tonalRamp": [
+          "oklch(15% 0.083 72)",
+          "oklch(27% 0.115 72)",
+          "oklch(39% 0.146 72)",
+          "oklch(51% 0.158 72)",
+          "oklch(63% 0.158 72)",
+          "oklch(75% 0.136 72)",
+          "oklch(85% 0.109 72)",
+          "oklch(95% 0.083 72)"
+        ]
+      },
+      "player-violet": {
+        "role": "world",
+        "displayName": "Player Violet",
+        "canonical": "#8e4ec6",
+        "tonalRamp": [
+          "oklch(15% 0.091 306)",
+          "oklch(27% 0.128 306)",
+          "oklch(39% 0.164 306)",
+          "oklch(51% 0.183 306)",
+          "oklch(63% 0.183 306)",
+          "oklch(75% 0.152 306)",
+          "oklch(85% 0.121 306)",
+          "oklch(95% 0.091 306)"
+        ]
+      },
+      "player-teal": {
+        "role": "world",
+        "displayName": "Player Teal",
+        "canonical": "#12a594",
+        "tonalRamp": [
+          "oklch(15% 0.068 182)",
+          "oklch(27% 0.091 182)",
+          "oklch(39% 0.113 182)",
+          "oklch(51% 0.114 182)",
+          "oklch(63% 0.114 182)",
+          "oklch(75% 0.106 182)",
+          "oklch(85% 0.087 182)",
+          "oklch(95% 0.068 182)"
+        ]
+      },
+      "terrain-forest": {
+        "role": "world",
+        "displayName": "Terrain Forest",
+        "canonical": "#2fbf71",
+        "tonalRamp": [
+          "oklch(15% 0.085 154)",
+          "oklch(27% 0.118 154)",
+          "oklch(39% 0.151 154)",
+          "oklch(51% 0.164 154)",
+          "oklch(63% 0.164 154)",
+          "oklch(75% 0.140 154)",
+          "oklch(85% 0.112 154)",
+          "oklch(95% 0.085 154)"
+        ]
+      },
+      "terrain-desert": {
+        "role": "world",
+        "displayName": "Terrain Desert",
+        "canonical": "#ffb627",
+        "tonalRamp": [
+          "oklch(15% 0.084 78)",
+          "oklch(27% 0.117 78)",
+          "oklch(39% 0.150 78)",
+          "oklch(51% 0.163 78)",
+          "oklch(63% 0.163 78)",
+          "oklch(75% 0.139 78)",
+          "oklch(85% 0.112 78)",
+          "oklch(95% 0.084 78)"
+        ]
+      },
+      "terrain-shore": {
+        "role": "world",
+        "displayName": "Terrain Shore",
+        "canonical": "#f2e4ae",
+        "tonalRamp": [
+          "oklch(15% 0.054 95)",
+          "oklch(27% 0.068 95)",
+          "oklch(39% 0.071 95)",
+          "oklch(51% 0.071 95)",
+          "oklch(63% 0.071 95)",
+          "oklch(75% 0.071 95)",
+          "oklch(85% 0.066 95)",
+          "oklch(95% 0.054 95)"
+        ]
+      },
+      "terrain-lake": {
+        "role": "world",
+        "displayName": "Terrain Lake",
+        "canonical": "#22c3d6",
+        "tonalRamp": [
+          "oklch(15% 0.071 208)",
+          "oklch(27% 0.096 208)",
+          "oklch(39% 0.121 208)",
+          "oklch(51% 0.123 208)",
+          "oklch(63% 0.123 208)",
+          "oklch(75% 0.112 208)",
+          "oklch(85% 0.092 208)",
+          "oklch(95% 0.071 208)"
+        ]
+      },
+      "terrain-mountain": {
+        "role": "world",
+        "displayName": "Terrain Mountain",
+        "canonical": "#8f86c9",
+        "tonalRamp": [
+          "oklch(15% 0.063 290)",
+          "oklch(27% 0.083 290)",
+          "oklch(39% 0.099 290)",
+          "oklch(51% 0.099 290)",
+          "oklch(63% 0.099 290)",
+          "oklch(75% 0.096 290)",
+          "oklch(85% 0.079 290)",
+          "oklch(95% 0.063 290)"
+        ]
+      },
+      "terrain-swamp": {
+        "role": "world",
+        "displayName": "Terrain Swamp",
+        "canonical": "#1f7a6a",
+        "tonalRamp": [
+          "oklch(15% 0.059 178)",
+          "oklch(27% 0.076 178)",
+          "oklch(39% 0.087 178)",
+          "oklch(51% 0.087 178)",
+          "oklch(63% 0.087 178)",
+          "oklch(75% 0.087 178)",
+          "oklch(85% 0.073 178)",
+          "oklch(95% 0.059 178)"
+        ]
+      },
+      "structure-green": {
+        "role": "world",
+        "displayName": "Structure Green",
+        "canonical": "#0b7a4b",
+        "tonalRamp": [
+          "oklch(15% 0.069 158)",
+          "oklch(27% 0.093 158)",
+          "oklch(39% 0.116 158)",
+          "oklch(51% 0.117 158)",
+          "oklch(63% 0.117 158)",
+          "oklch(75% 0.108 158)",
+          "oklch(85% 0.089 158)",
+          "oklch(95% 0.069 158)"
+        ]
+      },
+      "structure-blue": {
+        "role": "world",
+        "displayName": "Structure Blue",
+        "canonical": "#2d6be0",
+        "tonalRamp": [
+          "oklch(15% 0.093 262)",
+          "oklch(27% 0.131 262)",
+          "oklch(39% 0.169 262)",
+          "oklch(51% 0.190 262)",
+          "oklch(63% 0.190 262)",
+          "oklch(75% 0.157 262)",
+          "oklch(85% 0.125 262)",
+          "oklch(95% 0.093 262)"
+        ]
+      },
+      "structure-white": {
+        "role": "world",
+        "displayName": "Structure White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(27% 0.000 90)",
+          "oklch(39% 0.000 90)",
+          "oklch(51% 0.000 90)",
+          "oklch(63% 0.000 90)",
+          "oklch(75% 0.000 90)",
+          "oklch(85% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "territory-bear": {
+        "role": "world",
+        "displayName": "Territory Bear",
+        "canonical": "#0b1a2a",
+        "tonalRamp": [
+          "oklch(15% 0.038 251)",
+          "oklch(27% 0.038 251)",
+          "oklch(39% 0.038 251)",
+          "oklch(51% 0.038 251)",
+          "oklch(63% 0.038 251)",
+          "oklch(75% 0.038 251)",
+          "oklch(85% 0.038 251)",
+          "oklch(95% 0.038 251)"
+        ]
+      },
+      "territory-cougar": {
+        "role": "world",
+        "displayName": "Territory Cougar",
+        "canonical": "#c2185b",
+        "tonalRamp": [
+          "oklch(15% 0.097 6)",
+          "oklch(27% 0.137 6)",
+          "oklch(39% 0.178 6)",
+          "oklch(51% 0.202 6)",
+          "oklch(63% 0.202 6)",
+          "oklch(75% 0.164 6)",
+          "oklch(85% 0.131 6)",
+          "oklch(95% 0.097 6)"
+        ]
+      },
+      "territory-edge": {
+        "role": "world",
+        "displayName": "Territory Edge",
+        "canonical": "#fff6e0",
+        "tonalRamp": [
+          "oklch(15% 0.030 88)",
+          "oklch(27% 0.030 88)",
+          "oklch(39% 0.030 88)",
+          "oklch(51% 0.030 88)",
+          "oklch(63% 0.030 88)",
+          "oklch(75% 0.030 88)",
+          "oklch(85% 0.030 88)",
+          "oklch(95% 0.030 88)"
+        ]
+      },
+      "rock-top": {
+        "role": "world",
+        "displayName": "Rock Top",
+        "canonical": "#3e5c7a",
+        "tonalRamp": [
+          "oklch(15% 0.050 249)",
+          "oklch(27% 0.061 249)",
+          "oklch(39% 0.061 249)",
+          "oklch(51% 0.061 249)",
+          "oklch(63% 0.061 249)",
+          "oklch(75% 0.061 249)",
+          "oklch(85% 0.060 249)",
+          "oklch(95% 0.050 249)"
+        ]
+      },
+      "rock-base": {
+        "role": "world",
+        "displayName": "Rock Base",
+        "canonical": "#101c33",
+        "tonalRamp": [
+          "oklch(15% 0.046 262)",
+          "oklch(27% 0.048 262)",
+          "oklch(39% 0.048 262)",
+          "oklch(51% 0.048 262)",
+          "oklch(63% 0.048 262)",
+          "oklch(75% 0.048 262)",
+          "oklch(85% 0.048 262)",
+          "oklch(95% 0.046 262)"
+        ]
+      },
+      "fog": {
+        "role": "world",
+        "displayName": "Fog",
+        "canonical": "#123344",
+        "tonalRamp": [
+          "oklch(15% 0.046 234)",
+          "oklch(27% 0.049 234)",
+          "oklch(39% 0.049 234)",
+          "oklch(51% 0.049 234)",
+          "oklch(63% 0.049 234)",
+          "oklch(75% 0.049 234)",
+          "oklch(85% 0.049 234)",
+          "oklch(95% 0.046 234)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Home title only."
+      },
+      "display-sub": {
+        "displayName": "Display Sub",
+        "purpose": "Cyan subtitle under the home title."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Pass-and-play hand-off curtain."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Reveal title and dialog headings (1.05rem to 1.6rem)."
+      },
+      "clue": {
+        "displayName": "Clue",
+        "purpose": "The player's private clue."
+      },
+      "wordmark": {
+        "displayName": "Wordmark and Codes",
+        "purpose": "Nav wordmark, space code tags, rule numerals."
+      },
+      "lede": {
+        "displayName": "Lede",
+        "purpose": "Home story lines, max 32rem."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All running text, tabular numerals; rules cap at 62ch."
+      },
+      "control": {
+        "displayName": "Control",
+        "purpose": "Buttons, turn names, prompts."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels and popover action group labels, sentence case."
+      }
+    },
+    "shadows": [
+      {
+        "name": "lift",
+        "value": "0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 24px 60px -24px rgba(2, 8, 16, 0.75)",
+        "purpose": "Every floating glass surface."
+      },
+      {
+        "name": "cta-glow",
+        "value": "0 18px 40px -16px rgba(92, 225, 230, 0.55)",
+        "purpose": "The home CTA at rest."
+      },
+      {
+        "name": "cta-glow-hover",
+        "value": "0 22px 50px -14px rgba(92, 225, 230, 0.7)",
+        "purpose": "The home CTA on hover."
+      },
+      {
+        "name": "turn-ring",
+        "value": "inset 0 0 0 1px rgba(92, 225, 230, 0.55)",
+        "purpose": "Active player ring, on a 14% cyan fill."
+      },
+      {
+        "name": "your-turn-ring",
+        "value": "0 0 0 1px rgba(92, 225, 230, 0.4)",
+        "purpose": "Added to lift on the prompt when it is your move."
+      },
+      {
+        "name": "text-halo",
+        "value": "0 2px 18px rgba(5, 13, 24, 0.9)",
+        "purpose": "Text-shadow for copy set directly over the island."
+      },
+      {
+        "name": "backdrop-blur",
+        "value": "blur(16px) chrome, blur(18px) panels, blur(22px) rules dialog",
+        "purpose": "Glass translucency."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "House ease for all interface transitions and Motion entrances."
+      },
+      {
+        "name": "ease-sheet",
+        "value": "cubic-bezier(0.32, 0.72, 0, 1)",
+        "purpose": "Side sheets and the log drawer (0.5s to 0.55s slide)."
+      },
+      {
+        "name": "spring",
+        "value": "spring stiffness 380 damping 30",
+        "purpose": "Turn ring glide and clue card layout."
+      },
+      {
+        "name": "spring-segmented",
+        "value": "spring stiffness 400 damping 34",
+        "purpose": "Segmented control pill."
+      },
+      {
+        "name": "control",
+        "value": "0.3s",
+        "purpose": "Button, input and icon button state changes."
+      },
+      {
+        "name": "cta",
+        "value": "0.5s",
+        "purpose": "CTA glow and icon nudge."
+      },
+      {
+        "name": "screen",
+        "value": "0.45s fade",
+        "purpose": "Screen changes."
+      },
+      {
+        "name": "hero-entrance",
+        "value": "title 1s (delay 0.2s, y 24, blur 10px), lede 0.9s (delay 0.45s), actions 0.9s (delay 0.6s)",
+        "purpose": "Home first paint."
+      },
+      {
+        "name": "popover",
+        "value": "0.3s",
+        "purpose": "Space popover entrance."
+      },
+      {
+        "name": "toast",
+        "value": "0.45s rise with blur-in",
+        "purpose": "Answer toast."
+      },
+      {
+        "name": "reveal",
+        "value": "0.7s, delay 1.1s",
+        "purpose": "End-of-game reveal card after the habitat effect."
+      },
+      {
+        "name": "select-pop",
+        "value": "0.4s expo.out from 1.3x",
+        "purpose": "3D selection ring."
+      },
+      {
+        "name": "piece-drop",
+        "value": "0.6s bounce.out from +2.6 units, squash 0.35s back.out(3)",
+        "purpose": "Answer pieces landing."
+      },
+      {
+        "name": "beam-ripple",
+        "value": "beam 0.35s expo.out then fade 0.7s power2.out; ripple 0.7s expo.out to 1.35x",
+        "purpose": "Answer landing feedback."
+      },
+      {
+        "name": "fail-ring",
+        "value": "0.9s expo.out to 2.6x, coral",
+        "purpose": "Failed search."
+      },
+      {
+        "name": "habitat-reveal",
+        "value": "pillar and ring 1.1s expo.out, sun warm 1.5s, camera 1.4s power3.inOut to zoom 1.6",
+        "purpose": "Win reveal."
+      },
+      {
+        "name": "dive",
+        "value": "0.8s power3.in to zoom 2.4",
+        "purpose": "Leaving home into the game."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "transition-duration 0.01ms; GSAP effects skipped",
+        "purpose": "prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "nav-compact",
+        "value": "860px"
+      },
+      {
+        "name": "narrow",
+        "value": "700px"
+      }
+    ],
+    "world": {
+      "tileHeights": {
+        "water": 0.22,
+        "swamp": 0.3,
+        "desert": 0.36,
+        "forest": 0.42,
+        "mountain": 0.6
+      },
+      "lighting": {
+        "hemisphere": [
+          "#d6ecff",
+          "#1e5a5a",
+          1.25
+        ],
+        "sun": [
+          "#ffd7a0",
+          3.2
+        ],
+        "fill": [
+          "#8fc8ff",
+          0.6
+        ],
+        "toneMapping": "NeutralToneMapping",
+        "exposure": 1.08,
+        "fog": [
+          "#123344",
+          36,
+          210
+        ]
+      },
+      "gradients": {
+        "lake": [
+          "#0f5bc4",
+          "#2ee6e0"
+        ],
+        "pool": [
+          "#0e6e7a",
+          "#47f0d2"
+        ],
+        "rock": [
+          "#3e5c7a",
+          "#101c33"
+        ]
+      },
+      "terrainIconTint": {
+        "forest": "#5be39a",
+        "desert": "#ffc857",
+        "water": "#4fe3f0",
+        "mountain": "#b7aef0",
+        "swamp": "#3cc9a8"
+      },
+      "feedback": {
+        "hover": "#cffbff additive 0.85",
+        "select": "#0b1a2a band, #5ce1e6 band, #5ce1e6 glow 0.35",
+        "hatch": "0.75 opacity"
+      }
+    }
+  },
+  "components": [
+    {
+      "name": "Button",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "Default glass pill for secondary actions.",
+      "html": "<button class=\"ds-btn\">Cancel</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 44px; padding: 0.5rem 1.05rem; border: 1px solid var(--line-2, rgba(232, 244, 240, 0.18)); border-radius: 999px; background: rgba(232, 244, 240, 0.06); color: var(--ivory, #f4f1e8); font-family: 'Figtree', system-ui, sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: background-color 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), transform 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), border-color 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)); } .ds-btn:hover { background: rgba(232, 244, 240, 0.12); border-color: rgba(232, 244, 240, 0.3); } .ds-btn:active { transform: scale(0.97); } .ds-btn:focus-visible { outline: 2px solid var(--cyan, #5ce1e6); outline-offset: 3px; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ivory pill for the decisive action in a panel.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Place a cube here</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 44px; padding: 0.5rem 1.05rem; border: 1px solid var(--line-2, rgba(232, 244, 240, 0.18)); border-radius: 999px; background: rgba(232, 244, 240, 0.06); color: var(--ivory, #f4f1e8); font-family: 'Figtree', system-ui, sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: background-color 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), transform 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), border-color 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)); } .ds-btn:hover { background: rgba(232, 244, 240, 0.12); border-color: rgba(232, 244, 240, 0.3); } .ds-btn:active { transform: scale(0.97); } .ds-btn:focus-visible { outline: 2px solid var(--cyan, #5ce1e6); outline-offset: 3px; } .ds-btn-primary { background: var(--ivory, #f4f1e8); color: var(--ink-0, #050d18); border-color: var(--ivory, #f4f1e8); } .ds-btn-primary:hover { background: #ffffff; border-color: #ffffff; }"
+    },
+    {
+      "name": "Search Button",
+      "kind": "button",
+      "refersTo": "button-search",
+      "description": "Gold pill, used only to search a space.",
+      "html": "<button class=\"ds-btn ds-btn-search\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13Z M15.5 15.5 20 20\"/></svg>Search here</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 44px; padding: 0.5rem 1.05rem; border: 1px solid var(--line-2, rgba(232, 244, 240, 0.18)); border-radius: 999px; background: rgba(232, 244, 240, 0.06); color: var(--ivory, #f4f1e8); font-family: 'Figtree', system-ui, sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: background-color 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), transform 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), border-color 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)); } .ds-btn:hover { background: rgba(232, 244, 240, 0.12); border-color: rgba(232, 244, 240, 0.3); } .ds-btn:active { transform: scale(0.97); } .ds-btn:focus-visible { outline: 2px solid var(--cyan, #5ce1e6); outline-offset: 3px; } .ds-btn-search { background: var(--gold, #ffc857); color: #2a1a00; border-color: var(--gold, #ffc857); } .ds-btn-search:hover { background: #ffd57a; border-color: #ffd57a; }"
+    },
+    {
+      "name": "Call to Action",
+      "kind": "button",
+      "refersTo": "cta",
+      "description": "The single dominant home action: ivory pill with its arrow in a cyan-on-ink disc.",
+      "html": "<button class=\"ds-cta\">Begin the hunt<span class=\"ds-cta-icon\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h13 M13 6l6 6-6 6\"/></svg></span></button>",
+      "css": ".ds-cta { display: inline-flex; align-items: center; gap: 1rem; min-height: 56px; padding: 0.4rem 0.45rem 0.4rem 1.6rem; border: 0; border-radius: 999px; cursor: pointer; background: var(--ivory, #f4f1e8); color: var(--ink-0, #050d18); font-family: 'Figtree', system-ui, sans-serif; font-size: 1.02rem; font-weight: 600; box-shadow: 0 18px 40px -16px rgba(92, 225, 230, 0.55); transition: transform 0.5s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), box-shadow 0.5s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)); } .ds-cta:hover { box-shadow: 0 22px 50px -14px rgba(92, 225, 230, 0.7); } .ds-cta:active { transform: scale(0.98); } .ds-cta:focus-visible { outline: 2px solid var(--cyan, #5ce1e6); outline-offset: 3px; } .ds-cta-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 999px; background: var(--ink-1, #0a1a2a); color: var(--cyan, #5ce1e6); transition: transform 0.5s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)); } .ds-cta:hover .ds-cta-icon { transform: translateX(3px) scale(1.05); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Dark recessed field; focus turns the border cyan.",
+      "html": "<label class=\"ds-field\">Your name<input class=\"ds-input\" placeholder=\"Player 1\"></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 0.35rem; font-family: 'Figtree', system-ui, sans-serif; font-weight: 600; font-size: 0.85rem; color: rgba(244, 241, 232, 0.72); } .ds-input { min-height: 46px; padding: 0.5rem 0.85rem; width: 100%; box-sizing: border-box; border: 1px solid var(--line-2, rgba(232, 244, 240, 0.18)); border-radius: 10px; background: rgba(2, 8, 16, 0.45); color: var(--ivory, #f4f1e8); font: 400 15px 'Figtree', system-ui, sans-serif; transition: border-color 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), background-color 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)); } .ds-input::placeholder { color: rgba(244, 241, 232, 0.5); } .ds-input:focus-visible { outline: 0; border-color: var(--cyan, #5ce1e6); background: rgba(2, 8, 16, 0.65); }"
+    },
+    {
+      "name": "Island Nav",
+      "kind": "nav",
+      "refersTo": "island-nav",
+      "description": "The floating glass pill: wordmark, turn strip with a cyan ring on the active player, icon buttons.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-wordmark\">Hunch</span><ol class=\"ds-turns\"><li class=\"ds-turn ds-turn-active\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"11.5\" fill=\"#e5484d\"/><path d=\"M4 12a8 8 0 1 0 16 0a8 8 0 1 0 -16 0Z\" transform=\"translate(12 12) scale(.56) translate(-12 -12)\" fill=\"#fff8ea\"/></svg>Player 1</li><li class=\"ds-turn\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"11.5\" fill=\"#3e63dd\"/><path d=\"M12 3.5 21 19.5H3Z\" transform=\"translate(12 12) scale(.56) translate(-12 -12)\" fill=\"#fff8ea\"/></svg>Player 2</li></ol><button class=\"ds-icon-btn\" aria-label=\"Rules\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 5c3-1.5 5.5-1.5 8 0v14c-2.5-1.5-5-1.5-8 0Z M12 5c2.5-1.5 5-1.5 8 0v14c-3-1.5-5.5-1.5-8 0\"/></svg></button></nav>",
+      "css": ".ds-nav { display: inline-flex; align-items: center; gap: 1rem; padding: 6px 6px 6px 18px; border-radius: 999px; background: rgba(8, 20, 32, 0.62); border: 1px solid var(--line-2, rgba(232, 244, 240, 0.18)); backdrop-filter: blur(16px); box-shadow: var(--lift, 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 24px 60px -24px rgba(2, 8, 16, 0.75)); color: var(--ivory, #f4f1e8); font-family: 'Figtree', system-ui, sans-serif; } .ds-wordmark { font-family: 'Unbounded', 'Figtree', system-ui, sans-serif; font-weight: 700; font-size: 0.95rem; letter-spacing: -0.02em; white-space: nowrap; } .ds-turns { list-style: none; display: flex; gap: 2px; margin: 0; padding: 0; } .ds-turn { display: flex; align-items: center; gap: 0.45rem; padding: 6px 12px 6px 6px; border-radius: 999px; color: rgba(244, 241, 232, 0.5); font-weight: 600; font-size: 0.88rem; white-space: nowrap; } .ds-turn-active { color: var(--ivory, #f4f1e8); background: rgba(92, 225, 230, 0.14); box-shadow: inset 0 0 0 1px rgba(92, 225, 230, 0.55); } .ds-icon-btn { display: inline-grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 999px; background: transparent; color: rgba(244, 241, 232, 0.72); cursor: pointer; transition: background-color 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), color 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)); } .ds-icon-btn:hover { background: rgba(232, 244, 240, 0.1); color: var(--ivory, #f4f1e8); } .ds-icon-btn:focus-visible { outline: 2px solid var(--cyan, #5ce1e6); outline-offset: 3px; }"
+    },
+    {
+      "name": "Chips and Verdict",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Small 8px tags for pieces on a space, with a dot-led verdict line.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-space-code\">F1</span><span class=\"ds-chip\">Open</span><span class=\"ds-chip ds-chip-closed\">Closed</span><span class=\"ds-verdict ds-yes\">Could be the habitat</span><span class=\"ds-verdict ds-no\">Your clue rules this space out</span></div>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; color: var(--ivory, #f4f1e8); font-family: 'Figtree', system-ui, sans-serif; } .ds-chip { display: inline-flex; align-items: center; padding: 0.15rem 0.6rem; border-radius: 8px; background: rgba(232, 244, 240, 0.06); font-size: 0.82rem; } .ds-chip-closed { background: rgba(255, 122, 89, 0.12); } .ds-space-code { font-family: 'Unbounded', 'Figtree', system-ui, sans-serif; font-weight: 700; font-size: 0.85rem; padding: 0.2rem 0.5rem; border-radius: 8px; background: rgba(232, 244, 240, 0.1); } .ds-verdict { display: flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; font-weight: 600; } .ds-verdict::before { content: ''; width: 8px; height: 8px; border-radius: 50%; } .ds-yes { color: #a6f3e0; } .ds-yes::before { background: var(--cyan, #5ce1e6); } .ds-no { color: #ffc2b0; } .ds-no::before { background: var(--coral, #ff7a59); }"
+    },
+    {
+      "name": "Glass Panel",
+      "kind": "card",
+      "refersTo": "glass-panel",
+      "description": "The deep glass container used by the popover, sheets, drawer and reveal.",
+      "html": "<section class=\"ds-panel\"><h3 class=\"ds-panel-title\">Swamp</h3><p class=\"ds-panel-body\">Ask a player about this space, or search it.</p><button class=\"ds-panel-btn\">Place a cube here</button></section>",
+      "css": ".ds-panel { display: flex; flex-direction: column; gap: 0.8rem; max-width: 22rem; padding: 1rem 1.1rem; border-radius: 20px; background: rgba(7, 17, 28, 0.92); border: 1px solid var(--line-2, rgba(232, 244, 240, 0.18)); box-shadow: var(--lift, 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 24px 60px -24px rgba(2, 8, 16, 0.75)); backdrop-filter: blur(18px); color: var(--ivory, #f4f1e8); font-family: 'Figtree', system-ui, sans-serif; } .ds-panel-title { margin: 0; font-size: 1rem; font-weight: 600; } .ds-panel-body { margin: 0; font-size: 0.9rem; color: rgba(244, 241, 232, 0.72); } .ds-panel-btn { min-height: 44px; border-radius: 999px; border: 1px solid var(--ivory, #f4f1e8); background: var(--ivory, #f4f1e8); color: var(--ink-0, #050d18); font: 600 15px 'Figtree', system-ui, sans-serif; cursor: pointer; transition: background-color 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), transform 0.3s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)); } .ds-panel-btn:hover { background: #ffffff; } .ds-panel-btn:active { transform: scale(0.97); } .ds-panel-btn:focus-visible { outline: 2px solid var(--cyan, #5ce1e6); outline-offset: 3px; }"
+    },
+    {
+      "name": "Clue Card",
+      "kind": "custom",
+      "refersTo": "glass-panel",
+      "description": "The private clue, set in Unbounded on smoked glass at bottom-left.",
+      "html": "<aside class=\"ds-clue-card\"><p class=\"ds-clue\">The habitat is within three spaces of a white structure.</p></aside>",
+      "css": ".ds-clue-card { max-width: 21rem; padding: 0.55rem 0.8rem 0.75rem; border-radius: 20px; background: rgba(8, 20, 32, 0.62); border: 1px solid var(--line-2, rgba(232, 244, 240, 0.18)); box-shadow: var(--lift, 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 24px 60px -24px rgba(2, 8, 16, 0.75)); backdrop-filter: blur(16px); color: var(--ivory, #f4f1e8); } .ds-clue { margin: 0.2rem 0 0.55rem; font-family: 'Unbounded', 'Figtree', system-ui, sans-serif; font-weight: 500; font-size: 1.08rem; line-height: 1.35; letter-spacing: -0.01em; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Floating Island",
+    "overview": "A small, vivid, low-poly island hangs in a night sky, and the game is played on it. The terrain carries all the saturated colour: emerald forest, gold desert, turquoise lakes in pale shores, lavender peaks, deep blue-green swamp, set on jagged slate rock with clouds drifting below. The interface is the opposite material: translucent dark glass with hairline ivory edges, floating over the world and appearing only for the decision at hand (a nav pill at the top, a clue card bottom-left, a popover riding on the selected space).\n\nDensity is low and contextual. There is no frame, no board border and no persistent toolbar; the island fills the viewport and every action is taken on it. Three signal colours carry meaning across both layers: cyan for selection, focus and attention, gold for search and the habitat, coral for failure and closed spaces. Type pairs a wide geometric display face (Unbounded) for names, clues and moments with a friendly humanist sans (Figtree) for everything operational.\n\nMotion is soft and settling: one expo-out curve for the interface, springs for things that move between places, and physical, slightly playful GSAP easing for pieces landing on the board. Ambient life (wind in foliage, water glints, birds, clouds, motes) runs constantly and stops under reduced motion.",
+    "keyCharacteristics": [
+      "Night-sky ground, colour lives in the terrain, the interface stays neutral glass.",
+      "Three signal hues with fixed meanings: cyan, gold, coral.",
+      "Pills and concentric rounded glass; no hard edges, no frames.",
+      "Unbounded for display, Figtree for UI, both self-hosted.",
+      "Drawn SVG icons and player shape glyphs, never icon fonts or emoji.",
+      "Answers land as physical pieces with a beam and a ripple."
+    ],
+    "rules": [
+      {
+        "name": "The Three Signals Rule",
+        "body": "Cyan means \"this, now\", gold means \"search, habitat, win\", coral means \"no\". Never swap them, and never use a terrain or player colour as an interface signal.",
+        "section": "colors"
+      },
+      {
+        "name": "The Colour Belongs To The World Rule",
+        "body": "Interface surfaces stay navy glass and ivory. Saturated colour on screen comes from the island, the player glyphs and the three signals, nothing else.",
+        "section": "colors"
+      },
+      {
+        "name": "The Colour Plus Shape Rule",
+        "body": "A player is always a colour and a glyph together, in the turn strip, on pieces, in the log and on 3D decals.",
+        "section": "colors"
+      },
+      {
+        "name": "The Display Is For Words That Matter Rule",
+        "body": "Unbounded sets names, headings, the clue and codes. Anything you operate (buttons, labels, lists, toasts) is Figtree.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Numerals are tabular everywhere, so coordinates and counts never jitter.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Lift Rule",
+        "body": "Every floating surface gets the same lift shadow. Hierarchy comes from glass opacity (62% versus 92%) and blur, not from bigger shadows.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use the house ease cubic-bezier(0.22, 1, 0.36, 1) for interface motion, cubic-bezier(0.32, 0.72, 0, 1) for side sheets and drawers, and a spring (stiffness 380, damping 30) for things that move between places.",
+      "Do keep interface surfaces as navy glass with a 1px line-2 hairline and the lift shadow.",
+      "Do pair every player colour with its shape glyph.",
+      "Do give every control a 44px target where space allows, and a 2px cyan focus outline at 3px offset.",
+      "Do draw new icons as 1.5px round-capped strokes on a 24px grid.",
+      "Do honour reduced motion: CSS transitions collapse and 3D effects skip their animation."
+    ],
+    "donts": [
+      "Don't bring back brown parchment, wooden frames, beige panels or muted colour; the product retired that look.",
+      "Don't add a persistent action toolbar or frame panels around the board; actions belong in the popover on the selected space.",
+      "Don't use cyan, gold or coral for anything outside their meanings, or a terrain colour as an interface accent.",
+      "Don't use hard or offset shadows; depth is the scene, the glass and the one lift.",
+      "Don't use emoji, icon fonts or stock icon sets.",
+      "Don't set controls, labels or lists in Unbounded."
+    ]
+  }
+}

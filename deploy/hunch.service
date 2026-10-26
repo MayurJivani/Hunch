@@ -1,0 +1,22 @@
+[Unit]
+Description=hunch (live guessing game, Socket.IO)
+After=network-online.target
+
+[Service]
+User=icarusfalls
+WorkingDirectory=/opt/apps/Hunch
+# Optional overrides (PUBLIC_CAPACITY, PUBLIC_PACE, SOCKETS_PER_IP); nothing here is secret.
+EnvironmentFile=-/etc/apps/hunch.env
+Environment=NODE_ENV=production PORT=4351
+ExecStart=/usr/bin/node server/index.ts
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=10
+MemoryMax=512M
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

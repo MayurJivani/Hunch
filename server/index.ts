@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { extname, join, normalize, sep } from 'node:path';
 import { Server } from 'socket.io';
 import { attach } from './rooms.ts';
+import { attachPublic } from './public.ts';
 
 const PORT = Number(process.env.PORT ?? 4351);
 if (!Number.isInteger(PORT) || PORT <= 0) {
@@ -11,6 +12,25 @@ if (!Number.isInteger(PORT) || PORT <= 0) {
   process.exit(1);
 }
 const PROD = process.env.NODE_ENV === 'production';
+// Hunters per public hunt; a full hunt opens a parallel one. 400 is the load-tested size (scripts/load-public.ts).
+const CAPACITY = Number(process.env.PUBLIC_CAPACITY ?? 400);
+if (!Number.isInteger(CAPACITY) || CAPACITY < 1) {
+  console.error(`Invalid PUBLIC_CAPACITY: ${process.env.PUBLIC_CAPACITY}`);
+  process.exit(1);
+}
+// Speeds the clue clock up or down (0.25 = four times faster), for demos and local testing.
+const PACE = Number(process.env.PUBLIC_PACE ?? 1);
+if (!(PACE > 0)) {
+  console.error(`Invalid PUBLIC_PACE: ${process.env.PUBLIC_PACE}`);
+  process.exit(1);
+}
+// Simultaneous sockets allowed from one address. Raise it when a crowd shares one network.
+const PER_IP = Number(process.env.SOCKETS_PER_IP ?? 24);
+if (!Number.isInteger(PER_IP) || PER_IP < 1) {
+  console.error(`Invalid SOCKETS_PER_IP: ${process.env.SOCKETS_PER_IP}`);
+  process.exit(1);
+}
+const DATA = process.env.PUBLIC_DATA ?? join(import.meta.dirname, '..', 'data', 'public.json');
 const DIST = join(import.meta.dirname, '..', 'dist');
 const TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css',
@@ -47,5 +67,6 @@ const http = createServer(async (req, res) => {
 });
 
 const io = new Server(http, { maxHttpBufferSize: 4096, serveClient: false });
-attach(io);
+attach(io, undefined, PER_IP);
+attachPublic(io, { capacity: CAPACITY, dataFile: DATA, briefingMs: 20_000 * PACE, clueEveryMs: 30_000 * PACE, graceMs: 60_000 * PACE });
 http.listen(PORT, () => console.log(`hunch server on :${PORT}`));

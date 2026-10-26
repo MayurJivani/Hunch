@@ -101,6 +101,9 @@ const ICONS: Record<string, string> = {
   sound: 'M4 9h4l5-4v14l-5-4H4Z M16.5 9a4 4 0 0 1 0 6 M19 6.5a7.5 7.5 0 0 1 0 11',
   mute: 'M4 9h4l5-4v14l-5-4H4Z M17 9.5l5 5 M22 9.5l-5 5',
   music: 'M9 18V5l11-2v13 M9 18a3 3 0 1 1-6 0a3 3 0 1 1 6 0Z M20 16a3 3 0 1 1-6 0a3 3 0 1 1 6 0Z',
+  trophy: 'M8 4h8v5a4 4 0 0 1-8 0Z M8 6H5a3 3 0 0 0 3 4 M16 6h3a3 3 0 0 1-3 4 M12 13v4 M8.5 20h7 M10 17h4',
+  'chevron-up': 'M6 15l6-6 6 6',
+  'chevron-down': 'M6 9l6 6 6-6',
   'music-off': 'M9 18V5l11-2v13 M9 18a3 3 0 1 1-6 0a3 3 0 1 1 6 0Z M20 16a3 3 0 1 1-6 0a3 3 0 1 1 6 0Z M3 3l18 18',
 };
 

@@ -32,3 +32,14 @@ export interface RoomUpdate {
 
 export type Ack<T = object> = (res: ({ ok: true } & T) | { ok: false; error: string }) => void;
 export type Joined = { code: string; token: string; you: number };
+
+// ---- Public hunts ----
+const huntMode = z.enum(['classic', 'hotcold', 'oneshot']);
+export const PublicJoinMsg = z.object({
+  mode: huntMode,
+  name,
+  token: z.string().min(16).max(64).optional(), // the hunter's own token, to keep stats and resume a hunt
+  resume: z.boolean().default(false), // true: go back to the hunter's last hunt, even a finished one
+}).strict();
+export const GuessMsg = z.object({ space, nonce: z.string().min(4).max(40) }).strict();
+export const LeadersMsg = z.object({ mode: huntMode }).strict();

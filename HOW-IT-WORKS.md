@@ -6,12 +6,16 @@
 shared/   board.ts    hex grid, seeded map generator, clue library, puzzle generator
           engine.ts   turn rules, legality, player views (pure, used by server and client)
           protocol.ts Zod schemas for every socket message
+          hunt.ts     public hunts: clue sequence generator, rule sets, guess feedback, wire types
 server/   index.ts    one Node process: Socket.IO plus static files in production
           rooms.ts    rooms, seats, reconnect tokens, rate limiting
+          public.ts   public hunts: clue clock, guess judging, winner, stats and leaderboards
 src/      board3d.ts  Three.js diorama (instanced tiles, picking, pieces, GSAP motion)
           board2d.ts  SVG fallback with the same interface, used without WebGL
           Game.tsx    game screen; App.tsx home, pass-and-play curtain, online lobby
-tests/    engine.test.ts, rules.test.ts, rooms.test.ts (node:test, no framework)
+          Public.tsx  public hunt screen, home sheet, reveal and leaderboard
+tests/    engine.test.ts, rules.test.ts, rooms.test.ts, hunt.test.ts, public.test.ts (node:test, no framework)
+scripts/  load-public.ts  a 400-hunter hunt against a real server process (npm run load)
 ```
 
 Node 22.18+ runs the TypeScript in `shared/`, `server/` and `tests/` directly (type stripping), so the server has no build step and tests need no runner.
@@ -85,6 +89,30 @@ Bear territory is a solid band and cougar a dashed one, each over an ivory under
 ## The interface
 
 The board is the interface. A floating glass nav pill holds the wordmark, the turn strip and four icon buttons (log, rules, reset view, leave). Selecting a space opens a popover that the scene repositions over that space every frame; it shows the space, its pieces and your clue's verdict, and only the actions legal right now, with one line explaining any that are not. On phones it docks as a bottom sheet. The latest answer appears as a short toast; the full history lives in an optional log drawer. The home page renders the same island in a slow drifting showcase camera, and starting a game dives the camera in before the board takes over.
+
+## Public hunts
+
+The private game deals each player a different clue. A public hunt does the opposite: everyone receives the same clues at the same moment, and the race is who reads them fastest. It reuses the board generator, the clue library and `clueMap()` unchanged; only the clue sequence is new.
+
+**The sequence.** `generateHunt(seed, secret)` builds a standard board, then shuffles every positive and "not" clue (black excluded, standard boards have no black structures) and walks the list keeping a clue only if it removes at least one remaining space and no more than three quarters of them, until one space is left. It accepts 5 to 7 clues with at least 3 spaces still open before the last, so the final clue always matters and an early guess is a real gamble. As in the private game, the draw comes from a server-only `secret`, so the public board seed cannot be rerun to read the answer. `tests/hunt.test.ts` checks 150 hunts: every clue is true at the habitat, each one narrows the field, and the last leaves exactly one space.
+
+**The clock.** A hunt opens with a briefing (20 s by default) for hunters to arrive, then the server drops clue 1, then one clue every 30 s, then allows 60 s after the last before it times out and reveals. Every drop is one broadcast to the hunt's Socket.IO room, so everyone gets clue n in the same send; a late arrival gets the clues already out and nothing ahead. Deadlines are server timestamps and each state carries the server's `now`, so clients count down on the server clock.
+
+**Guesses.** A guess is a space and a client nonce. The server checks the phase, the hunter's cooldown and shots left, refuses a space already tried, measures hex distance to the habitat and replies with a hint only: near or far within two spaces (First to Find), scorching to cold in five bands (Hot or Cold), or nothing (One Shot, one guess). Distance and direction never leave the server before the reveal; hex distance is symmetric, so a band cannot point anywhere. A resent nonce gets the stored reply, so a retry after a dropped answer is never counted twice. Misses cost time: First to Find waits 4 s after the first miss and 3 s more for each after that (capped at 20 s), Hot or Cold always waits 10 s.
+
+**The winner.** Node runs each handler synchronously, so guesses are judged strictly in the order the server reads them. The first correct one ends the hunt on the spot; a correct guess read even a millisecond later finds the hunt over and is refused. That arrival order is the tie-break, applied the same way every time. The reveal then sends the habitat, the full clue list, the winner and time, a 108-space count of every guess (the crowd heat map) and each hunter's best miss. Nobody sees anyone else's guesses before that, so there is no crowd to follow.
+
+**Hunters.** No account. The first join issues a random 24-byte token, kept in the browser and stored on the server only as a SHA-256 digest, mapped to a random public id. Tabs and reconnects with the same token are the same hunter with the same attempts, so a second tab buys nothing. A refresh or a dropped socket resumes the same hunt and history. Hunter counts go out as one aggregated pulse per hunt at most once a second, never per player.
+
+**Capacity.** `PUBLIC_CAPACITY` (default 400) hunters per hunt; a full hunt opens a parallel one of the same rule set. At most 200 hunts and 20 000 hunter records exist at once; finished hunts are swept after 15 minutes. Tokens that never reach a result are pruned, so join spam cannot grow the store. `SOCKETS_PER_IP` (default 24) is the private rooms' existing per-address cap; raise it for an event where a crowd shares one network.
+
+**Stats and leaderboards.** When a hunt ends, everyone who guessed gets an entry, a win, a streak update, a fastest solve, clues used and miss distances, kept per rule set so one mode cannot farm another's board. The leaderboard shows wins today, this week and all time, the fastest solves, and the sharpest hunters (lowest average miss, five misses minimum). It is a flat JSON file (`PUBLIC_DATA`, default `data/public.json`, written atomically every couple of seconds after a change), the relay shape's store for what must survive a restart. A hunt in progress does not survive a restart.
+
+**Load test.** `npm run load` starts the real server as a child process and plays one hunt with 400 socket clients: all join, all miss at once, all drop and reconnect at once, then all work out the answer from the public clues and fire together. On a desktop machine: joins p95 31 ms, clue 2 reached all 400 within 16 ms of each other, 400 simultaneous misses p95 11 ms, 400 reconnects p95 21 ms, 400 simultaneous correct guesses produced exactly 1 winner (p95 22 ms) and every hunter saw the reveal 25 ms after firing; the server used 1.4% of one core and grew from 114 to 169 MB. The largest state payload is 4 KB.
+
+**The screen.** The same island, nav pill and popover as the private game. The case file (bottom left) lists clues as they drop; choosing one mists the spaces it rules out, one clue at a time, because combining them is the puzzle. A new clue arrives as a banner under the nav that mists its own region for a moment, then glides into the case file. Selecting a space opens the popover with a gold Guess button, so a stray tap never counts; One Shot asks once more before locking in. Misses stay on the map as "not here" cubes, the piece the private game uses for the same meaning. At the reveal the gold habitat pillar rises, and a panel tells who found it, replays the clues on the board one by one, and shows the crowd's heat map with the most-guessed space.
+
+`PUBLIC_PACE` scales the whole clock (0.25 runs it four times faster), for demos and local testing.
 
 ## Dev review states
 

@@ -5,10 +5,13 @@ import { type Action, type GameState, actor, apply, illegal, newGame, viewFor } 
 import { type BoardLike, createBoard } from './board2d.ts';
 import { AudioToggles, EASE, Game, logText } from './Game.tsx';
 import { HowTo } from './HowTo.tsx';
-import { type RoomUpdate, call, clearSeat, loadSeat, saveSeat, socket } from './net.ts';
+import { type RoomUpdate, call, clearSeat, loadHunter, loadSeat, saveSeat, socket } from './net.ts';
+import type { HuntMode } from '../shared/hunt.ts';
+import { PublicGame, PublicSheet, useLobby } from './Public.tsx';
 import { Glyph, Icon } from './pieces.tsx';
 
-type Screen = { k: 'home' } | { k: 'local'; names: string[]; mode: Mode } | { k: 'online' };
+type Screen = { k: 'home' } | { k: 'local'; names: string[]; mode: Mode } | { k: 'online' }
+  | { k: 'public'; mode: HuntMode; name: string; resume: boolean };
 
 const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0] >>> 1;
 
@@ -29,15 +32,22 @@ function demoGame(seed: number, steps: number, mode: Mode) {
 }
 
 export function App() {
-  const [screen, setScreen] = useState<Screen>(() => (demo?.has('demo') ? { k: 'local', names: [], mode: demo.has('hard') ? 'hard' : 'standard' } : loadSeat() ? { k: 'online' } : { k: 'home' }));
+  const [screen, setScreen] = useState<Screen>(() => {
+    if (demo?.has('demo')) return { k: 'local', names: [], mode: demo.has('hard') ? 'hard' : 'standard' };
+    if (loadSeat()) return { k: 'online' };
+    const hunter = loadHunter(); // a refresh mid-hunt goes straight back to it
+    return hunter?.active ? { k: 'public', mode: hunter.mode, name: hunter.name, resume: true } : { k: 'home' };
+  });
   const home = () => setScreen({ k: 'home' });
   return (
     <MotionConfig reducedMotion="user">
       <AnimatePresence mode="wait">
         <motion.div key={screen.k} className="screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease: EASE }}>
-          {screen.k === 'local' ? <LocalGame names={screen.names} mode={screen.mode} onLeave={home} />
+          {screen.k === 'public' ? <PublicGame mode={screen.mode} name={screen.name} resume={screen.resume} onLeave={home} />
+            : screen.k === 'local' ? <LocalGame names={screen.names} mode={screen.mode} onLeave={home} />
             : screen.k === 'online' ? <OnlineGame onLeave={home} />
-            : <Home onLocal={(names, mode) => setScreen({ k: 'local', names, mode })} onOnline={() => setScreen({ k: 'online' })} />}
+            : <Home onLocal={(names, mode) => setScreen({ k: 'local', names, mode })} onOnline={() => setScreen({ k: 'online' })}
+                onPublic={(mode, name) => setScreen({ k: 'public', mode, name, resume: false })} />}
         </motion.div>
       </AnimatePresence>
     </MotionConfig>
@@ -76,18 +86,20 @@ function ModePicker({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void 
   );
 }
 
-function Home({ onLocal, onOnline }: { onLocal: (names: string[], mode: Mode) => void; onOnline: () => void }) {
+function Home({ onLocal, onOnline, onPublic }: { onLocal: (names: string[], mode: Mode) => void; onOnline: () => void; onPublic: (mode: HuntMode, name: string) => void }) {
   const roomFromUrl = new URLSearchParams(location.search).get('room')?.toUpperCase() ?? '';
   const world = useRef<BoardLike | null>(null);
-  const [sheet, setSheet] = useState<null | 'local' | 'online'>(roomFromUrl ? 'online' : null);
+  const [sheet, setSheet] = useState<null | 'local' | 'online' | 'public'>(roomFromUrl ? 'online' : null);
   const [rules, setRules] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [names, setNames] = useState(['', '', '']);
   const [mode, setMode] = useState<Mode>('standard');
-  const [name, setName] = useState('');
+  const [name, setName] = useState(() => loadHunter()?.name ?? '');
   const [code, setCode] = useState(roomFromUrl);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const lobby = useLobby(!leaving);
+  const hunting = lobby ? Object.values(lobby.modes).reduce((n, m) => n + m.hunters, 0) : 0;
 
   // The transition into play: the camera dives toward the island while the interface falls away.
   function go(then: () => void) {
@@ -145,10 +157,15 @@ function Home({ onLocal, onOnline }: { onLocal: (names: string[], mode: Mode) =>
                 Begin the hunt
                 <span className="cta-icon"><Icon name="arrow" size={18} /></span>
               </button>
+              <button className="btn public-btn" onClick={() => { setSheet('public'); setError(null); }}>
+                <span className={`live-dot ${hunting ? 'busy' : ''}`} aria-hidden="true" />
+                Public hunt
+                <span className="public-count">{hunting ? `${hunting} hunting now` : 'race everyone'}</span>
+              </button>
               <button className="text-btn" onClick={() => setRules(true)}>How to play</button>
             </motion.div>
             <p className="meta">
-              <span>3 to 5 players</span><i /><span>about 30 minutes</span><i /><span>one device or online</span>
+              <span>3 to 5 players</span><i /><span>about 30 minutes</span><i /><span>one device or online</span><i /><span>or everyone at once</span>
             </p>
           </motion.main>
         )}
@@ -156,9 +173,16 @@ function Home({ onLocal, onOnline }: { onLocal: (names: string[], mode: Mode) =>
 
       <AnimatePresence>
         {sheet && !leaving && (
-          <motion.aside key="sheet" className="sheet" aria-label="Start an expedition"
+          <motion.aside key="sheet" className="sheet" aria-label={sheet === 'public' ? 'Public hunt' : 'Start an expedition'}
             initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ duration: 0.55, ease: [0.32, 0.72, 0, 1] }}>
             <div className="bezel">
+              {sheet === 'public' ? <>
+                <header className="sheet-head">
+                  <h2>Public hunt</h2>
+                  <button className="icon-btn" onClick={() => setSheet(null)} aria-label="Close"><Icon name="close" /></button>
+                </header>
+                <PublicSheet lobby={lobby} name={name} setName={setName} onStart={(m, n) => go(() => onPublic(m, n))} />
+              </> : <>
               <header className="sheet-head">
                 <h2>Start an expedition</h2>
                 <button className="icon-btn" onClick={() => setSheet(null)} aria-label="Close"><Icon name="close" /></button>
@@ -206,6 +230,7 @@ function Home({ onLocal, onOnline }: { onLocal: (names: string[], mode: Mode) =>
                 </div>
               )}
               {error && <p className="error" role="alert">{error}</p>}
+              </>}
             </div>
           </motion.aside>
         )}

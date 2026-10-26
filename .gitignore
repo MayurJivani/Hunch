@@ -9,3 +9,7 @@ dist/
 .mcp.json
 .impeccable/review/
 .impeccable/mocks/
+
+# Public hunt stats
+data/
+.impeccable

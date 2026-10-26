@@ -22,3 +22,11 @@ export function loadSeat(): { code: string; token: string } | null {
 }
 
 export type { RoomUpdate };
+
+// Public hunts: one token per device keeps a hunter's stats and lets a refresh resume the hunt in progress.
+export interface Hunter { token?: string; name: string; mode: 'classic' | 'hotcold' | 'oneshot'; active: boolean }
+const PUBLIC_KEY = 'hunch.public';
+export function loadHunter(): Hunter | null {
+  try { return JSON.parse(localStorage.getItem(PUBLIC_KEY) ?? 'null'); } catch { return null; }
+}
+export const saveHunter = (h: Hunter) => { try { localStorage.setItem(PUBLIC_KEY, JSON.stringify(h)); } catch { /* private mode */ } };

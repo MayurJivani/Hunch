@@ -20,7 +20,6 @@ interface Room {
 const rooms = new Map<string, Room>();
 const ROOM_TTL_MS = 2 * 60 * 60 * 1000;
 const MAX_ROOMS = 5000; // memory ceiling; beyond it, new rooms are refused until the sweep frees some
-const MAX_SOCKETS_PER_IP = 24;
 const LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // no I or O, they read as digits
 
 const digest = (token: string) => createHash('sha256').update(token).digest();
@@ -37,7 +36,42 @@ function seatFor(room: Room, token: string) {
   return room.seats.findIndex((s) => timingSafeEqual(s.tokenHash, h));
 }
 
-export function attach(io: Server, seedSource: () => number = () => randomInt(2 ** 31)) {
+/**
+ * Wrap a socket's handlers: rate limit, schema check, and a guaranteed ack. The token bucket
+ * (8 messages per second sustained, bursts of 16) lives on the socket, so rooms and public hunts share it.
+ */
+export function guard(socket: Socket) {
+  const bucket: { tokens: number; last: number } = (socket.data.bucket ??= { tokens: 16, last: Date.now() });
+  const limited = () => {
+    const now = Date.now();
+    bucket.tokens = Math.min(16, bucket.tokens + ((now - bucket.last) / 1000) * 8);
+    bucket.last = now;
+    if (bucket.tokens < 1) return true;
+    bucket.tokens--;
+    return false;
+  };
+  return function on<S extends { safeParse: (v: unknown) => { success: boolean; data?: unknown } }>(
+    event: string, schema: S | null, handle: (msg: any, ack: Ack<any>) => void,
+  ) {
+    socket.on(event, (raw: unknown, ack: unknown) => {
+      // A message sent without a payload arrives with its ack callback in the first position.
+      if (typeof raw === 'function' && ack === undefined) [raw, ack] = [undefined, raw];
+      if (raw === null) raw = undefined; // an explicit undefined payload is serialised as null
+      const reply: Ack<any> = typeof ack === 'function' ? (ack as Ack<any>) : () => {};
+      if (limited()) return reply({ ok: false, error: 'Slow down a little.' });
+      const parsed = schema ? schema.safeParse(raw) : { success: true, data: raw };
+      if (!parsed.success) return reply({ ok: false, error: 'That request was malformed.' });
+      try {
+        handle(parsed.data, reply);
+      } catch (e) {
+        reply({ ok: false, error: e instanceof Error ? e.message : 'Something went wrong.' });
+      }
+    });
+  };
+}
+
+/** `perIp` caps simultaneous sockets from one address; raise it when many players share one network (an event, a school). */
+export function attach(io: Server, seedSource: () => number = () => randomInt(2 ** 31), perIpMax = 24) {
   // Per-socket seat binding; a socket is in at most one room.
   const bound = new Map<string, { code: string; seat: number }>();
 
@@ -79,38 +113,9 @@ export function attach(io: Server, seedSource: () => number = () => randomInt(2 
     const ip = socket.handshake.address;
     perIp.set(ip, (perIp.get(ip) ?? 0) + 1);
     socket.on('disconnect', () => { const n = (perIp.get(ip) ?? 1) - 1; if (n > 0) perIp.set(ip, n); else perIp.delete(ip); });
-    if (perIp.get(ip)! > MAX_SOCKETS_PER_IP) { socket.disconnect(true); return; }
+    if (perIp.get(ip)! > perIpMax) { socket.disconnect(true); return; }
     let created = 0; // rooms this socket has opened
-    // Token bucket: 8 messages per second sustained, bursts of 16.
-    let tokens = 16, last = Date.now();
-    const limited = () => {
-      const now = Date.now();
-      tokens = Math.min(16, tokens + ((now - last) / 1000) * 8);
-      last = now;
-      if (tokens < 1) return true;
-      tokens--;
-      return false;
-    };
-
-    // Wrap every handler: rate limit, schema check, and a guaranteed ack.
-    function on<S extends { safeParse: (v: unknown) => { success: boolean; data?: unknown } }>(
-      event: string, schema: S | null, handle: (msg: any, ack: Ack<any>) => void,
-    ) {
-      socket.on(event, (raw: unknown, ack: unknown) => {
-        // A message sent without a payload arrives with its ack callback in the first position.
-        if (typeof raw === 'function' && ack === undefined) [raw, ack] = [undefined, raw];
-        if (raw === null) raw = undefined; // an explicit undefined payload is serialised as null
-        const reply: Ack<any> = typeof ack === 'function' ? (ack as Ack<any>) : () => {};
-        if (limited()) return reply({ ok: false, error: 'Slow down a little.' });
-        const parsed = schema ? schema.safeParse(raw) : { success: true, data: raw };
-        if (!parsed.success) return reply({ ok: false, error: 'That request was malformed.' });
-        try {
-          handle(parsed.data, reply);
-        } catch (e) {
-          reply({ ok: false, error: e instanceof Error ? e.message : 'Something went wrong.' });
-        }
-      });
-    }
+    const on = guard(socket);
 
     on('create', CreateMsg, ({ name }, ack: Ack<Joined>) => {
       if (++created > 5) return ack({ ok: false, error: 'Too many rooms from this connection. Refresh to start over.' });

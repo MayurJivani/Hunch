@@ -11,6 +11,7 @@ The 3D map is the interface: you pick spaces on a miniature diorama, and every a
 
 - **Pass and play** on one device, with a hand-off screen that hides each clue.
 - **Online rooms** with a four-letter code; the server holds the only copy of the clues and the habitat, and a refresh drops you back into your seat.
+- **Public hunts** for everyone at once: one creature, one board, the same clues dropping on a server clock, and the first correct guess wins. Three rule sets (First to Find, Hot or Cold, One Shot), a reveal that replays how the clues closed in, a crowd heat map, and leaderboards. Load-tested at 400 hunters in one hunt.
 - **Every map is generated** from a seed and checked to have exactly one habitat, with no redundant clue.
 - **Hard mode** follows the rulebook's advanced game: "not" clues and black structures.
 - **A notebook** lists the clues each player's pieces still fit, the pen-and-paper tracking the rulebook recommends.
@@ -36,6 +37,12 @@ npm run build && npm start
 
 `npm start` serves the built client and the sockets from one process on `PORT` (default 4351).
 
-How the rules engine, generator and privacy model work: [HOW-IT-WORKS.md](HOW-IT-WORKS.md).
+```bash
+npm run load
+```
+
+Plays a 400-hunter public hunt against a real server process and prints latency, CPU and memory. Public hunt settings (`PUBLIC_CAPACITY`, `PUBLIC_PACE`, `PUBLIC_DATA`, `SOCKETS_PER_IP`) are described in [HOW-IT-WORKS.md](HOW-IT-WORKS.md#public-hunts).
+
+How the rules engine, generator, public hunts and privacy model work: [HOW-IT-WORKS.md](HOW-IT-WORKS.md).
 
 Rules follow the official rulebook (standard mode). Map art, names and copy are original; no official tiles, clue-book text or artwork are used.

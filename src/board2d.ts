@@ -16,10 +16,10 @@ export function createBoard(host: HTMLElement, board: Board, on: BoardEvents, op
 }
 
 const NS = 'http://www.w3.org/2000/svg';
-const R = 30;
-const SQ3 = Math.sqrt(3);
-const center = (i: number) => [R * (1.5 * colOf(i) + 1) + 30, R * SQ3 * (rowOf(i) + (colOf(i) & 1) / 2 + 0.5) + 30] as [number, number];
-const hexPoints = (cx: number, cy: number, r: number) =>
+export const R = 30;
+export const SQ3 = Math.sqrt(3);
+export const center = (i: number) => [R * (1.5 * colOf(i) + 1) + 30, R * SQ3 * (rowOf(i) + (colOf(i) & 1) / 2 + 0.5) + 30] as [number, number];
+export const hexPoints = (cx: number, cy: number, r: number) =>
   Array.from({ length: 6 }, (_, k) => `${(cx + r * Math.cos((k * Math.PI) / 3)).toFixed(1)},${(cy + r * Math.sin((k * Math.PI) / 3)).toFixed(1)}`).join(' ');
 
 function el<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number>, parent?: Element) {

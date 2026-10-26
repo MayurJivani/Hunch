@@ -345,6 +345,16 @@ A glass panel that rides on the selected space with a rotated tail. Head: space 
 - **Toast:** glass-strong, 14px radius, 0.92rem, enters with a 0.45s rise and blur-in; holds a space link (8px tag, cyan bold text).
 - **Prompt:** a glass pill, 600 0.95rem ivory-2; ivory with a 40% cyan ring when it is your turn.
 
+### Public hunt
+- **Home entry:** a glass pill beside the CTA, led by a live dot (green with a ping when anyone is hunting) and the live count in ivory-2.
+- **Rule picker:** stacked rows (name, live status, one-line pitch) in a 14px container; the chosen row wears a cyan ring that glides between rows on the house spring.
+- **Briefing:** a centred deep-glass card over a soft navy radial dim: two blinking gold eyes, the creature's name in Unbounded (clamp 1.8 to 2.6rem), its epithet in gold Unbounded 500, the field report in italic ivory-2, three rule lines, then the hunter count and a countdown whose digits roll.
+- **Case file:** smoked glass bottom-left (max 23rem). Clues are Unbounded 500 rows behind numbered discs; the lensed clue gets a 10% cyan wash, a cyan edge and a cyan disc. The next slot is a dashed disc with a draining cyan hairline.
+- **Clue drop:** a deep-glass banner under the nav with a cyan disc and a faint cyan halo; it blurs in, then morphs into its case-file row (shared layout, house spring).
+- **Guess:** the popover's gold button; during a cooldown it dims and a gold wash drains across it.
+- **Miss toast:** the standard toast with a coral inner edge, a coral "Not F4." and a five-tick ivory heat meter. Temperature is told by words and tick count, never by new colours.
+- **Reveal panel:** deep glass docked right (bottom sheet on phones) so the gold pillar stays visible: gold title, three stat tiles that count up, the clue list with spaces left after each and a board replay, and a flat crowd heat map (ivory density over muted terrain, the answer ringed in gold, your guesses as coral dots).
+
 ### Icons
 Drawn for this game, 24px viewBox at 18px: interface icons are 1.5px strokes with round caps and joins (log, book, lens, eye, exit, target, pencil, close, arrow, ask). Terrain icons are filled silhouettes in a bright tint per terrain (swamp is stroked); structure and territory icons repeat their 3D forms.
 

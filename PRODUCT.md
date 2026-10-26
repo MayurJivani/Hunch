@@ -31,6 +31,7 @@ A game takes 20 to 40 minutes. In pass and play the device changes hands, so pri
 - Standard rules only for now (3 to 5 players, positive clues, white/green/blue structures). Advanced mode (negative clues, black structures) is deliberately undecided.
 - Every board is generated from a seed and must have exactly one habitat; clue sets are also rejected when any clue is redundant.
 - The server owns online game state; clients never receive another player's clue or the habitat until the game ends.
+- Public hunts: any number of hunters (load-tested at 400 per hunt) share one board and receive the same public clue sequence on a server clock; the first correct guess wins. The private game's rules and secrecy are untouched.
 - Original art, names and copy only. No official map tiles, clue-book text, logos or artwork.
 
 ## Brand Commitments

@@ -70,6 +70,29 @@ export function guard(socket: Socket) {
   };
 }
 
+/**
+ * The visitor's address. Behind cloudflared and Caddy every socket arrives from loopback, so a loopback
+ * peer means the local proxy, and Cloudflare's header names the visitor. From any other peer the header is
+ * ignored: a direct client could set it to whatever it likes.
+ */
+export function clientAddress(handshake: { address: string; headers: Record<string, string | string[] | undefined> }): string {
+  const peer = handshake.address;
+  const cf = handshake.headers['cf-connecting-ip'];
+  const viaProxy = peer === '127.0.0.1' || peer === '::1' || peer === '::ffff:127.0.0.1';
+  return viaProxy && typeof cf === 'string' && cf ? cf : peer;
+}
+
+/** Same-site pages only: another site must not be able to open game sockets in a visitor's browser. */
+export function originAllowed(headers: Record<string, string | string[] | undefined>): boolean {
+  const origin = headers.origin;
+  if (typeof origin !== 'string') return true; // not a browser: nothing ambient to abuse
+  try {
+    return new URL(origin).host === headers.host;
+  } catch {
+    return false;
+  }
+}
+
 /** `perIp` caps simultaneous sockets from one address; raise it when many players share one network (an event, a school). */
 export function attach(io: Server, seedSource: () => number = () => randomInt(2 ** 31), perIpMax = 24) {
   // Per-socket seat binding; a socket is in at most one room.
@@ -110,7 +133,8 @@ export function attach(io: Server, seedSource: () => number = () => randomInt(2 
   const perIp = new Map<string, number>();
   io.on('connection', (socket) => {
     // A ceiling on simultaneous sockets from one address keeps one client from multiplying its rate limits.
-    const ip = socket.handshake.address;
+    // Behind the tunnel the raw address is loopback for everyone, which capped the whole site at 24 sockets.
+    const ip = clientAddress(socket.handshake);
     perIp.set(ip, (perIp.get(ip) ?? 0) + 1);
     socket.on('disconnect', () => { const n = (perIp.get(ip) ?? 1) - 1; if (n > 0) perIp.set(ip, n); else perIp.delete(ip); });
     if (perIp.get(ip)! > perIpMax) { socket.disconnect(true); return; }

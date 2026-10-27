@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize, sep } from 'node:path';
 import { Server } from 'socket.io';
-import { attach } from './rooms.ts';
+import { attach, originAllowed } from './rooms.ts';
 import { attachPublic } from './public.ts';
 
 const PORT = Number(process.env.PORT ?? 4351);
@@ -66,7 +66,7 @@ const http = createServer(async (req, res) => {
   }
 });
 
-const io = new Server(http, { maxHttpBufferSize: 4096, serveClient: false });
+const io = new Server(http, { maxHttpBufferSize: 4096, serveClient: false, allowRequest: (req, cb) => cb(null, originAllowed(req.headers)) });
 attach(io, undefined, PER_IP);
 attachPublic(io, { capacity: CAPACITY, dataFile: DATA, briefingMs: 20_000 * PACE, clueEveryMs: 30_000 * PACE, graceMs: 60_000 * PACE });
 http.listen(PORT, () => console.log(`hunch server on :${PORT}`));

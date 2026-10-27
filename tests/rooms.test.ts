@@ -128,3 +128,12 @@ test('rooms: the host picks hard mode at start; anything else is refused', async
   assert.equal(v.board.hexes.filter((h) => h.structure?.color === 'black').length, 2);
   assert.ok(v.clues[1] && v.clues.filter(Boolean).length === 1);
 });
+
+test('rooms: behind the tunnel each visitor is their own address, and a direct client cannot pick one', async () => {
+  const { clientAddress, originAllowed } = await import('../server/rooms.ts');
+  const local = (cf: string) => ({ address: '127.0.0.1', headers: { 'cf-connecting-ip': cf } });
+  assert.notEqual(clientAddress(local('203.0.113.1')), clientAddress(local('203.0.113.2')));
+  assert.equal(clientAddress({ address: '198.51.100.9', headers: { 'cf-connecting-ip': '203.0.113.1' } }), '198.51.100.9');
+  assert.equal(originAllowed({ origin: 'https://evil.example', host: 'hunch.futile.studio' }), false);
+  assert.equal(originAllowed({ origin: 'https://hunch.futile.studio', host: 'hunch.futile.studio' }), true);
+});

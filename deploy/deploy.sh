@@ -49,8 +49,7 @@ else
 fi
 
 mkdir -p /opt/apps/Hunch && cd /opt/apps/Hunch
-# data/ holds the public hunt state; it outlives deploys.
-find . -mindepth 1 -maxdepth 1 ! -name node_modules ! -name data -exec rm -rf {} +
+find . -mindepth 1 -maxdepth 1 ! -name node_modules -exec rm -rf {} +
 tar xzf "/tmp/$NAME.tgz" && rm -f "/tmp/$NAME.tgz"
 npm ci --omit=dev --no-audit --no-fund --loglevel=error
 sudo -n systemctl restart "$NAME"

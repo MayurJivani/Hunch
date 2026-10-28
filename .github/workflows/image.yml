@@ -30,4 +30,5 @@ jobs:
       # sits behind Cloudflare Access, so the call carries the CI service token too.
       - name: Redeploy
         if: env.URL != ''
-        run: curl -fsS -H "Authorization: Bearer $TOKEN" -H "CF-Access-Client-Id: $CF_ID" -H "CF-Access-Client-Secret: $CF_SECRET" "$URL"
+        run: >-
+          curl -fsS -H "Authorization: Bearer $TOKEN" -H "CF-Access-Client-Id: $CF_ID" -H "CF-Access-Client-Secret: $CF_SECRET" "$URL"

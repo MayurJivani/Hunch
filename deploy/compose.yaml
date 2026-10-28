@@ -1,19 +1,24 @@
-# Coolify on Jinx (FRC/DEPLOY.md). Host network: listens on 4351 like the old
-# unit did, so deploy/hunch.caddy is unchanged and Caddy still reads as 127.0.0.1.
+# Coolify on Jinx (FRC/DEPLOY.md). Host network: the app listens on 4351 like
+# its old systemd unit did, so its Caddy block, Postgres URL and env file are unchanged.
 services:
   hunch:
     image: ghcr.io/mayurjivani/hunch:latest
     network_mode: host
     restart: unless-stopped
+    user: "1000:1000"
+    command: ["node", "server/index.ts"]
     env_file:
       - path: /etc/apps/hunch.env
         required: false
     environment:
-      PUBLIC_DATA: /data/public.json
+      NODE_ENV: "production"
+      PORT: "4351"
+      PUBLIC_DATA: "/data/public.json"
     volumes:
       - /var/lib/hunch:/data
     mem_limit: 512m
     read_only: true
-    tmpfs: /tmp
+    tmpfs:
+      - /tmp
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]

@@ -3,6 +3,7 @@
 services:
   hunch:
     image: ghcr.io/mayurjivani/hunch:latest
+    pull_policy: always
     network_mode: host
     restart: unless-stopped
     user: "1000:1000"

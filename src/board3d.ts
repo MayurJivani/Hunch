@@ -178,18 +178,39 @@ function glyphTexture(p: number) {
   });
 }
 
+// Odd-q flat-top hexes of radius 1 (see hexCenter): world xz to the space underneath, then its fog level.
+const FOG_GLSL = `
+const vec3 FOG_COLOR = vec3(0.86, 0.9, 0.96);
+float fogAt(vec2 p) {
+  p += vec2(${CX.toFixed(4)}, ${CZ.toFixed(4)});
+  float q = p.x / 1.5, r = p.y / ${SQ3.toFixed(6)} - q * 0.5;
+  vec3 c = vec3(q, r, -q - r), rc = floor(c + 0.5), d = abs(rc - c);
+  if (d.x > d.y && d.x > d.z) rc.x = -rc.y - rc.z; else if (d.y > d.z) rc.y = -rc.x - rc.z;
+  int col = int(rc.x), row = int(rc.y) + (col - (col & 1)) / 2;
+  if (col < 0 || col >= ${COLS} || row < 0 || row >= ${ROWS}) return 0.0;
+  return texelFetch(uFog, ivec2(col, row), 0).r;
+}
+float hash2(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float vnoise(vec2 p) {
+  vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash2(i), hash2(i + vec2(1, 0)), u.x), mix(hash2(i + vec2(0, 1)), hash2(i + vec2(1, 1)), u.x), u.y);
+}
+float fbm(vec2 p) { return 0.5 * vnoise(p) + 0.3 * vnoise(p * 2.03 + 7.1) + 0.2 * vnoise(p * 4.1 - 3.7); }`;
+
 /**
  * Shared shader additions for world materials. Every surface gets a world-position varying and drifting
  * cloud shadows; foliage bends in gusts by local height with a per-instance phase; water gets drifting
- * glints. All driven by one time uniform, so nothing is rebuilt per frame.
+ * glints. Ruled-out spaces sit under fog of war, read per pixel from a COLS x ROWS fog map by the hex
+ * underneath, so shared pieces (lake necks, corner patches) fog exactly where they cross a ruled-out space.
+ * All driven by shared uniforms, so nothing is rebuilt per frame.
  */
-function living<T extends THREE.MeshStandardMaterial>(mat: T, time: { value: number }, opts: { sway?: number; water?: boolean } = {}) {
+type Living = { uTime: { value: number }; uFog: { value: THREE.Texture } };
+function living<T extends THREE.MeshStandardMaterial>(mat: T, uni: Living, opts: { sway?: number; water?: boolean } = {}) {
   const { sway = 0, water = false } = opts;
   mat.onBeforeCompile = (sh) => {
-    sh.uniforms.uTime = time;
-    sh.vertexShader = 'uniform float uTime;\nattribute float aDim;\nvarying float vDim;\nvarying vec3 vWP;\nvarying vec3 vLocal;\n' + sh.vertexShader
+    Object.assign(sh.uniforms, uni);
+    sh.vertexShader = 'uniform float uTime;\nvarying vec3 vWP;\nvarying vec3 vLocal;\nvarying vec2 vAnchor;\n' + sh.vertexShader
       .replace('#include <begin_vertex>', `#include <begin_vertex>
-        vDim = aDim;
         vec3 ip = vec3(0.0);
         #ifdef USE_INSTANCING
           ip = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
@@ -205,24 +226,32 @@ function living<T extends THREE.MeshStandardMaterial>(mat: T, time: { value: num
           wp4 = instanceMatrix * wp4;
         #endif
         vWP = (modelMatrix * wp4).xyz;
-        vLocal = vWP - ip;`);
-    sh.fragmentShader = 'uniform float uTime;\nvarying float vDim;\nvarying vec3 vWP;\nvarying vec3 vLocal;\n' + sh.fragmentShader
+        vLocal = vWP - ip;
+        vAnchor = (modelMatrix * vec4(ip, 1.0)).xz;`);
+    sh.fragmentShader = `uniform float uTime;\nuniform sampler2D uFog;\nvarying vec3 vWP;\nvarying vec3 vLocal;\nvarying vec2 vAnchor;\n${FOG_GLSL}\n` + sh.fragmentShader
       .replace('#include <color_fragment>', `#include <color_fragment>
         // Cloud shadows drifting across the land.
         float cs = sin(vWP.x * 0.21 + uTime * 0.06 + sin(vWP.z * 0.17 - uTime * 0.03) * 2.0) * sin(vWP.z * 0.19 - uTime * 0.045 + sin(vWP.x * 0.13) * 1.5);
         diffuseColor.rgb *= 1.0 - 0.14 * smoothstep(0.2, 0.8, cs);
-        // Ruled-out spaces sit under a pale drifting mist: they keep a hint of their terrain hue, lose their
-        // contrast, and never turn grey or brown. Live spaces stay fully saturated by comparison.
-        float mistN = 0.5 + 0.5 * sin(vWP.x * 0.9 + uTime * 0.25) * sin(vWP.z * 1.1 - uTime * 0.2);
-        diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.64, 0.71, 0.8) * (0.86 + 0.14 * mistN), vDim * 0.55);`)
+        // Fog of war over ruled-out spaces. Water fogs by the pixel (necks and patches straddle spaces); props
+        // fog by their root so a tree leaning over a border belongs to its own space.
+        vec2 fogP = ${water ? 'vWP.xz' : 'vAnchor'};
+        float fog = fogAt(fogP);
+        float wisp = 0.0;
+        if (fog > 0.001) {
+          wisp = fbm(vWP.xz * 0.9 + vec2(uTime * 0.11, uTime * 0.05)) * 0.6 + fbm(vWP.xz * 2.3 - vec2(uTime * 0.07, -uTime * 0.13)) * 0.4;
+          fog *= 0.72 + 0.26 * smoothstep(0.25, 0.75, wisp);
+        }
+        diffuseColor.rgb = mix(diffuseColor.rgb, FOG_COLOR, fog);`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
-        totalEmissiveRadiance += vec3(0.05, 0.07, 0.1) * vDim;
+        // Fog carries its own soft light, so it reads as mist even in shadow rather than turning grey.
+        totalEmissiveRadiance += FOG_COLOR * fog * (0.22 + 0.12 * wisp);
         ${water ? `
         vec2 wp = vWP.xz;
         float w1 = sin(wp.x * 3.1 + uTime * 0.9 + sin(wp.y * 1.9 + uTime * 0.5) * 1.8);
         float w2 = sin(wp.y * 3.7 - uTime * 0.7 + sin(wp.x * 2.2 - uTime * 0.35) * 1.4);
         float glint = smoothstep(0.74, 1.0, w1 * w2);
-        totalEmissiveRadiance += (vec3(0.62, 1.0, 1.0) * glint * 0.5 + vec3(0.0, 0.05, 0.08)) * (1.0 - 0.75 * vDim);` : ''}`);
+        totalEmissiveRadiance += (vec3(0.62, 1.0, 1.0) * glint * 0.5 + vec3(0.0, 0.05, 0.08)) * (1.0 - fog);` : ''}`);
   };
   mat.customProgramCacheKey = () => `living${sway}${water}`;
   return mat;
@@ -262,8 +291,10 @@ export class BoardView {
   private tileMeshes: THREE.InstancedMesh[] = [];
   private tileSlot: { mesh: THREE.InstancedMesh; n: number }[] = [];
   private tileColor: THREE.Color[] = [];
-  private propSlots: { mesh: THREE.InstancedMesh; n: number }[][] = Array.from({ length: SPACES }, () => []);
-  private dim: boolean[] = Array(SPACES).fill(false);
+  /** Fog of war per space (row * COLS + col), eased toward fogTarget each frame. */
+  private fog = new Uint8Array(SPACES);
+  private fogTarget = new Uint8Array(SPACES);
+  private fogTex = Object.assign(new THREE.DataTexture(this.fog, COLS, ROWS, THREE.RedFormat), { needsUpdate: true });
   private hovered: number | null = null;
   private selected: number | null = null;
   private flash = { i: -1, k: 0 };
@@ -287,6 +318,7 @@ export class BoardView {
   private top: number[];
   private raf = 0;
   private time = { value: 0 };
+  private uni: Living = { uTime: this.time, uFog: { value: this.fogTex } };
   private clock = new THREE.Timer();
   private sun!: THREE.DirectionalLight;
   private hemi!: THREE.HemisphereLight;
@@ -463,7 +495,7 @@ export class BoardView {
     for (const t of Object.keys(HEIGHT) as Terrain[]) {
       const spaces = this.board.hexes.flatMap((h, i) => (h.terrain === t ? [i] : []));
       const mesh = new THREE.InstancedMesh(hexTile(HEIGHT[t]),
-        living(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: ROUGH[t], flatShading: true }), this.time), spaces.length);
+        living(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: ROUGH[t], flatShading: true }), this.uni), spaces.length);
       spaces.forEach((i, n) => {
         const p = hexCenter(i);
         mesh.setMatrixAt(n, _m.compose(p, _q.identity(), _s.set(1, this.top[i] / HEIGHT[t], 1)));
@@ -492,25 +524,24 @@ export class BoardView {
   // Lakes: a deep-to-shallow surface inside a sandy shore, joined to neighbouring lakes by short streams.
   private water() {
     const water = this.board.hexes.flatMap((h, i) => (h.terrain === 'water' ? [i] : []));
-    const mat = living(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.08, metalness: 0.1 }), this.time, { water: true });
+    const mat = living(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.08, metalness: 0.1 }), this.uni, { water: true });
     const surface = new THREE.InstancedMesh(hexRings([0.3, 0.6, 0.8], ['#0757C2', '#0E8CD8', '#19B8E0', LAKE_RIM]), mat, water.length);
-    const links: { m: THREE.Matrix4; ends: number[] }[] = [];
+    const links: { m: THREE.Matrix4 }[] = [];
     water.forEach((i, n) => {
       const p = hexCenter(i).setY(this.top[i] + 0.01);
       surface.setMatrixAt(n, _m.makeTranslation(p));
-      this.propSlots[i].push({ mesh: surface, n }); // the lake fades with its space
       this.waterSpots.push(p.clone());
       for (const { deg, j } of this.across(i)) {
         if (j <= i || this.board.hexes[j]?.terrain !== 'water') continue;
         const a = (deg * Math.PI) / 180;
         // Lakes share one water level, so the neck sits flush with both surfaces.
-        links.push({ ends: [i, j], m: new THREE.Matrix4().compose(_v.set(p.x + Math.cos(a) * SQ3 / 2, p.y - 0.001, p.z + Math.sin(a) * SQ3 / 2), _q.setFromAxisAngle(_s.set(0, 1, 0), -a), _s.set(1, 1, 1)) });
+        links.push({ m: new THREE.Matrix4().compose(_v.set(p.x + Math.cos(a) * SQ3 / 2, p.y - 0.001, p.z + Math.sin(a) * SQ3 / 2), _q.setFromAxisAngle(_s.set(0, 1, 0), -a), _s.set(1, 1, 1)) });
       }
     });
     surface.receiveShadow = true;
     this.scene.add(surface);
     // Where three lakes meet, a small patch covers the tile corners so the water reads as one body.
-    const corners = new Map<string, { at: THREE.Vector3; i: number }>();
+    const corners = new Map<string, { at: THREE.Vector3 }>();
     for (const i of water) {
       const near = this.across(i);
       for (let k = 0; k < 6; k++) {
@@ -518,15 +549,12 @@ export class BoardView {
         if (a < 0 || b < 0 || this.board.hexes[a].terrain !== 'water' || this.board.hexes[b].terrain !== 'water') continue;
         const ang = ((60 + 60 * k) * Math.PI) / 180, c = hexCenter(i);
         const at = new THREE.Vector3(c.x + Math.cos(ang), this.top[i] + 0.009, c.z + Math.sin(ang));
-        corners.set(`${at.x.toFixed(2)},${at.z.toFixed(2)}`, { at, i });
+        corners.set(`${at.x.toFixed(2)},${at.z.toFixed(2)}`, { at });
       }
     }
     if (corners.size) {
       const patch = new THREE.InstancedMesh(tint(new THREE.CircleGeometry(0.34, 6).rotateX(-Math.PI / 2), LAKE_RIM), mat, corners.size);
-      [...corners.values()].forEach(({ at, i }, k) => {
-        patch.setMatrixAt(k, _m.makeTranslation(at));
-        this.propSlots[i].push({ mesh: patch, n: k });
-      });
+      [...corners.values()].forEach(({ at }, k) => patch.setMatrixAt(k, _m.makeTranslation(at)));
       patch.receiveShadow = true;
       this.scene.add(patch);
     }
@@ -539,10 +567,7 @@ export class BoardView {
       this.scene.add(seam);
       // A neck exactly as wide as a lake edge and the colour of its rim: neighbouring lakes read as one body of water.
       const stream = new THREE.InstancedMesh(tint(new THREE.PlaneGeometry(SQ3 - 2 * 0.8 * Math.cos(Math.PI / 6) + 0.02, 0.8).rotateX(-Math.PI / 2), LAKE_RIM), mat, links.length);
-      links.forEach(({ m, ends }, k) => {
-        stream.setMatrixAt(k, m);
-        this.propSlots[ends[0]].push({ mesh: stream, n: k }); // fades with its first lake
-      });
+      links.forEach(({ m }, k) => stream.setMatrixAt(k, m));
       stream.receiveShadow = true;
       this.scene.add(stream);
     }
@@ -705,18 +730,17 @@ export class BoardView {
       }
     });
 
-    const still = living(new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.7 }), this.time);
-    const wet = living(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.06, emissive: '#0A3A3A' }), this.time);
+    const still = living(new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.7 }), this.uni);
+    const wet = living(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.06, emissive: '#0A3A3A' }), this.uni);
     const windy = new Map<number, THREE.MeshStandardMaterial>();
     const r2 = rng(this.board.seed + 6);
     for (const { kind, color, list } of placed.values()) {
       const s = SWAY[kind];
-      if (s && !windy.has(s)) windy.set(s, living(new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.75 }), this.time, { sway: s }));
+      if (s && !windy.has(s)) windy.set(s, living(new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.75 }), this.uni, { sway: s }));
       const mesh = new THREE.InstancedMesh(make(kind, color || '#FFFFFF'), kind === 'pool' ? wet : s ? windy.get(s)! : still, list.length);
       list.forEach(({ m, i }, k) => {
         mesh.setMatrixAt(k, m);
         mesh.setColorAt(k, _col.setRGB(1, 1, 1).offsetHSL(0, 0, (r2() - 0.5) * 0.08));
-        this.propSlots[i].push({ mesh, n: k });
       });
       mesh.castShadow = !['pool', 'lily', 'flower', 'grass'].includes(kind);
       mesh.receiveShadow = true;
@@ -773,13 +797,12 @@ export class BoardView {
       for (const { deg, j } of this.across(i)) if (j < 0) edges.push({ i, a: (deg * Math.PI) / 180 });
     }
     if (!edges.length) return;
-    const spill = new THREE.InstancedMesh(lip, living(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.08, metalness: 0.1, side: THREE.DoubleSide }), this.time, { water: true }), edges.length);
+    const spill = new THREE.InstancedMesh(lip, living(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.08, metalness: 0.1, side: THREE.DoubleSide }), this.uni, { water: true }), edges.length);
     // Curtains hang flush from the edge and are a touch wider than it, so neighbouring falls overlap into one sheet.
     const curtain = new THREE.InstancedMesh(new THREE.PlaneGeometry(1.08, 3.2).translate(0, -1.6, 0), mat, edges.length);
     edges.forEach(({ i, a }, k) => {
       const c = hexCenter(i), y = this.top[i] + 0.01;
       spill.setMatrixAt(k, _m.compose(_v.set(c.x, y - 0.001, c.z), _q.setFromAxisAngle(_s.set(0, 1, 0), -a), _s.set(1, 1, 1)));
-      this.propSlots[i].push({ mesh: spill, n: k });
       curtain.setMatrixAt(k, _m.compose(_v.set(c.x + Math.cos(a) * (OUT + 0.004), y, c.z + Math.sin(a) * (OUT + 0.004)), _q.setFromAxisAngle(_s.set(0, 1, 0), -a + Math.PI / 2), _s.set(1, 1, 1)));
       const puff = new THREE.Sprite(mist);
       puff.position.set(c.x + Math.cos(a) * 1.2, y - 2.9, c.z + Math.sin(a) * 1.2);
@@ -994,6 +1017,15 @@ export class BoardView {
   private tick(dt: number, t: number) {
     // Ambient: wind, water and sky keep moving even while players think.
     this.time.value = t;
+    // Fog rolls in and lifts over about half a second.
+    let moved = false;
+    for (let i = 0; i < SPACES; i++) {
+      const d = this.fogTarget[i] - this.fog[i];
+      if (!d) continue;
+      this.fog[i] += Math.sign(d) * Math.max(1, Math.min(Math.abs(d), Math.round(dt * 400)));
+      moved = true;
+    }
+    if (moved) this.fogTex.needsUpdate = true;
     this.sun.intensity = 3.3 + Math.sin(t * 0.07) * 0.25;
     for (const f of this.falls) f.offset.y = t * 0.9; // positive scrolls the ribbon downward
     this.selectGlow.opacity = 0.25 + Math.sin(t * 3) * 0.12;
@@ -1173,7 +1205,7 @@ export class BoardView {
     this.on.hover(i);
   }
 
-  /** Restyle one space: ruled out sinks into dusk (in the shader), hover and selection brighten, a failed search flushes coral. */
+  /** Restyle one space (fog of war lives in the shader's fog map): hover and selection brighten, a failed search flushes coral. */
   private paint(i: number) {
     const slot = this.tileSlot[i];
     if (!slot) return;
@@ -1182,13 +1214,6 @@ export class BoardView {
     if (i === this.flash.i) _col.lerp(CORAL, this.flash.k * 0.7);
     slot.mesh.setColorAt(slot.n, _col);
     slot.mesh.instanceColor!.needsUpdate = true;
-    const d = this.dim[i] ? 1 : 0;
-    for (const { mesh, n } of [slot, ...this.propSlots[i]]) {
-      let a = mesh.geometry.getAttribute('aDim') as THREE.InstancedBufferAttribute | undefined;
-      if (!a) mesh.geometry.setAttribute('aDim', a = new THREE.InstancedBufferAttribute(new Float32Array(mesh.instanceMatrix.count), 1));
-      a.setX(n, d);
-      a.needsUpdate = true;
-    }
   }
 
   private setRing(ring: THREE.Object3D, i: number | null, lift = 0.014) {
@@ -1275,14 +1300,10 @@ export class BoardView {
     }
   }
 
-  /** Spaces your clue rules out sink into dusk; the board stays readable but the live spaces glow by contrast. */
+  /** Spaces your clue rules out roll under fog of war; the live spaces stay clear by contrast. */
   setHatch(mask: boolean[] | null) {
-    for (let i = 0; i < SPACES; i++) {
-      const on = !!mask?.[i];
-      if (on === this.dim[i]) continue;
-      this.dim[i] = on;
-      this.paint(i);
-    }
+    for (let i = 0; i < SPACES; i++) this.fogTarget[i] = mask?.[i] ? 200 : 0;
+    if (reducedMotion()) { this.fog.set(this.fogTarget); this.fogTex.needsUpdate = true; }
   }
 
   /** Brief board feedback for an event at space i. */
@@ -1474,6 +1495,7 @@ export class BoardView {
         mat.dispose();
       }
     });
+    this.fogTex.dispose();
     this.renderer.dispose();
     this.renderer.domElement.remove();
   }

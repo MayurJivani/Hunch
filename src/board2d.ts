@@ -45,8 +45,10 @@ class FlatBoard implements BoardLike {
     const w = R * (1.5 * (COLS - 1) + 2) + 60, h = R * SQ3 * (ROWS + 0.5) + 60;
     this.svg = el('svg', { viewBox: `0 0 ${w} ${h}`, class: 'board-flat', preserveAspectRatio: 'xMidYMid meet' });
     const defs = el('defs', {}, this.svg);
-    const pat = el('pattern', { id: 'hatch', width: 8, height: 8, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, defs);
-    el('rect', { width: 3, height: 8, fill: 'rgba(6,16,28,.6)' }, pat);
+    // Fog of war: pale mist whose edges a turbulence map frays into wisps.
+    const fog = el('filter', { id: 'fog', x: '-5%', y: '-5%', width: '110%', height: '110%' }, defs);
+    el('feTurbulence', { type: 'fractalNoise', baseFrequency: 0.06, numOctaves: 3, seed: 4, result: 'n' }, fog);
+    el('feDisplacementMap', { in: 'SourceGraphic', in2: 'n', scale: 7 }, fog);
 
     for (let c = 0; c < COLS; c++) el('text', { x: center(c)[0], y: 18, class: 'flat-label' }, this.svg).textContent = String.fromCharCode(65 + c);
     for (let r = 0; r < ROWS; r++) el('text', { x: 12, y: center(r * COLS)[1] + 5, class: 'flat-label' }, this.svg).textContent = String(r + 1);
@@ -111,7 +113,7 @@ class FlatBoard implements BoardLike {
   setSelected(i: number | null) { this.select.setAttribute('points', i === null ? '' : hexPoints(...center(i), R - 2)); }
   setHatch(mask: boolean[] | null) {
     this.hatch.replaceChildren();
-    mask?.forEach((on, i) => { if (on) el('polygon', { points: hexPoints(...center(i), R - 1.5), fill: 'url(#hatch)' }, this.hatch); });
+    mask?.forEach((on, i) => { if (on) el('polygon', { points: hexPoints(...center(i), R - 1.5), fill: 'rgba(220,230,245,.8)', filter: 'url(#fog)' }, this.hatch); });
   }
   setHabitat(i: number | null) { this.habitat.setAttribute('points', i === null ? '' : hexPoints(...center(i), R + 1)); }
   follow(elx: HTMLElement, i: number | null) { if (i === null) this.followers.delete(elx); else this.followers.set(elx, i); }

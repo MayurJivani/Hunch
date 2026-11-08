@@ -1,35 +1,19 @@
 #!/bin/sh
-# Build here, ship what runs to Jinx, restart. Re-runnable, no arguments.
-# Same shape as FRC/Dabber/deploy/deploy.sh: no Docker, passwordless sudo on the box.
-#
-# The first run also installs the unit and the site block. No env file: nothing
-# here is secret, the unit carries PORT. The public hostname is a
-# Cloudflare dashboard step: Zero Trust > Tunnels > Public Hostname,
-# hunch.futile.studio -> http://localhost:80.
+# Box side of Hunch on Jinx: the state directory and the site block.
+# No env file: nothing here is secret.
+# The app itself runs under Coolify (deploy/compose.yaml, image from GHCR), so
+# nothing is built or restarted here (FRC/DEPLOY.md). Re-runnable; on a rebuild
+# jinx/restore-all.sh runs it before the app is started in Coolify.
 set -eu
 cd "$(dirname "$0")/.."
 HOST=${HOST:-ssh.futile.studio}
 NAME=hunch
-SITE=hunch.futile.studio
 
-# Ship committed code only, so uncommitted work never goes live by accident.
-BUILD=$(mktemp -d)
-trap 'rm -rf "$BUILD"' EXIT
-git archive HEAD | tar x -C "$BUILD"
-cd "$BUILD"
-npm ci --no-audit --no-fund --loglevel=error
-npm run build
-tar czf $NAME.tgz package.json package-lock.json dist server shared
-
-scp -q deploy/$NAME.caddy deploy/$NAME.service $NAME.tgz "$HOST":/tmp/
-ssh "$HOST" "NAME=$NAME SITE=$SITE sh -s" <<'BOX'
+scp -q deploy/$NAME.caddy "$HOST":/tmp/
+ssh "$HOST" "NAME=$NAME sh -s" <<'BOX'
 set -eu
-if ! cmp -s "/tmp/$NAME.service" "/etc/systemd/system/$NAME.service"; then
-  sudo -n install -m 644 "/tmp/$NAME.service" "/etc/systemd/system/$NAME.service"
-  sudo -n systemctl daemon-reload
-  sudo -n systemctl enable -q "$NAME"
-fi
-rm -f "/tmp/$NAME.service"
+# Mounted by the container, which runs as node (1000); 0700 like the old unit's.
+sudo -n install -d -m 700 /var/lib/hunch && sudo -n chown -R 1000:1000 /var/lib/hunch
 
 LIVE=/etc/caddy/conf.d/$NAME.caddy
 IN=/tmp/$NAME.caddy
@@ -47,16 +31,5 @@ else
   sudo -n rm -f "$IN.prev"
   sudo -n systemctl reload caddy
 fi
-
-mkdir -p /opt/apps/Hunch && cd /opt/apps/Hunch
-find . -mindepth 1 -maxdepth 1 ! -name node_modules -exec rm -rf {} +
-tar xzf "/tmp/$NAME.tgz" && rm -f "/tmp/$NAME.tgz"
-npm ci --omit=dev --no-audit --no-fund --loglevel=error
-sudo -n systemctl restart "$NAME"
-for _ in $(seq 1 30); do
-  curl -sf -o /dev/null -H "Host: $SITE" http://127.0.0.1/ && break
-  sleep 1
-done
-curl -sf -o /dev/null -H "Host: $SITE" http://127.0.0.1/
 BOX
-echo "$NAME: deployed; live at https://$SITE"
+echo "$NAME: box side in place; deploy it from Coolify"
